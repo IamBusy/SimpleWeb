@@ -17,6 +17,14 @@ func (config Config) SetByMap(kvs map[string]string)  {
 		config.configuration[k] = v
 	}
 }
+func (config Config) SetByMapWithPrefix(prefix string,kvs map[string]string)  {
+	for k,v := range kvs {
+		config.configuration[prefix+"."+k] = v
+	}
+}
+
+
+
 
 func (config Config) Get(key,def string) (string,bool) {
 	value,exist := config.configuration[key]
