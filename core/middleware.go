@@ -6,6 +6,6 @@ import (
 )
 
 type MiddleWare interface {
-	in(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
-	out(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
+	In(w http.ResponseWriter, r *http.Request, ps *httprouter.Params)
+	Out(w http.ResponseWriter, r *http.Request, ps *httprouter.Params)
 }
