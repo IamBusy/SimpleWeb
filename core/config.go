@@ -4,6 +4,10 @@ type Config struct {
 	configuration map[string]string
 }
 
+func (config *Config) Init()  {
+	config.configuration = make(map[string]string,20)
+}
+
 func (config Config) Set(key, value string)  {
 	config.configuration[key] = value
 }
