@@ -1,36 +1,43 @@
 package core
 
-type Config struct {
+type Config interface {
+	Set(key, value string)
+	SetByMap(kvs map[string]string)
+	SetByMapWithPrefix(prefix string,kvs map[string]string)
+	Get(key,def string) string
+}
+
+type config struct {
 	configuration map[string]string
 }
 
-func (config *Config) Init()  {
-	config.configuration = make(map[string]string,20)
+func NewConfig() Config {
+	conf := &config{}
+	conf.configuration = make(map[string]string,20)
+	return conf
 }
 
-func (config Config) Set(key, value string)  {
+func (config *config) Set(key, value string)  {
 	config.configuration[key] = value
 }
 
-func (config Config) SetByMap(kvs map[string]string)  {
+func (config *config) SetByMap(kvs map[string]string)  {
 	for k,v := range kvs {
 		config.configuration[k] = v
 	}
 }
-func (config Config) SetByMapWithPrefix(prefix string,kvs map[string]string)  {
+func (config *config) SetByMapWithPrefix(prefix string,kvs map[string]string)  {
 	for k,v := range kvs {
 		config.configuration[prefix+"."+k] = v
 	}
 }
 
 
-
-
-func (config Config) Get(key,def string) (string,bool) {
+func (config *config) Get(key,def string) (string) {
 	value,exist := config.configuration[key]
 	if exist {
-		return value,true
+		return value
 	} else {
-		return def,false
+		return def
 	}
 }
