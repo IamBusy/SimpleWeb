@@ -24,6 +24,6 @@ func (user *user)SetApp(container core.Container)  {
 }
 
 func (user *user) All() *sql.Rows {
-	result,_ := user.app.DB().Raw("select * from users")
+	result,_ := user.app.DB().GetBuilder().Table("users").Where("id","<","100").Get()
 	return result
 }
