@@ -1,46 +1,64 @@
 package core
 
+type Container interface {
+	Init()
+	RegisterService(name string, service Service)
+	Service(name string) Service
+	RegisterMiddleWare(name string, middleware MiddleWare)
+	Middleware(name string) (*MiddleWare)
+}
 
-type Container struct {
-	items map[string]func() struct{}
-	instances map[string]struct{}
+type container struct {
+	//items map[string]func() struct{}
+	//instances map[string]struct{}
 	services map[string]*Service
 	middlewares map[string]*MiddleWare
 }
 
 /**
- * Allocate memory for Container
+ * Create and allocate memory for Container
  */
-func (container *Container) Init ()  {
-	container.middlewares = make(map[string]*MiddleWare)
-	container.services = make(map[string]*Service)
+func NewContainer() Container  {
+	ctn := &container{}
+	ctn.services = make(map[string]*Service)
+	ctn.middlewares = make(map[string]*MiddleWare)
+	return ctn
 }
 
 
-func (container *Container) Bind(name string,buildFunc func() struct{})  {
-	container.items[name] = buildFunc;
+
+
+
+//func (ctn *container) Bind(name string,buildFunc func() struct{})  {
+//	ctn.items[name] = buildFunc;
+//}
+//
+//func (ctn *container) Build(name string) (struct{},bool) {
+//	instance, exist := ctn.instances[name]
+//	if exist {
+//		return instance,true
+//	} else {
+//		if buildFunc,exist := ctn.items[name];exist {
+//			ctn.instances[name] = buildFunc()
+//			return ctn.instances[name],true
+//		} else {
+//			return struct {}{},false
+//		}
+//	}
+//}
+
+/**
+ * Register Service in the Container
+ */
+func (ctn *container) RegisterService(name string, service Service)  {
+	ctn.services[name] = &service
 }
 
-func (container *Container) Build(name string) (struct{},bool) {
-	instance, exist := container.instances[name]
-	if exist {
-		return instance,true
-	} else {
-		if buildFunc,exist := container.items[name];exist {
-			container.instances[name] = buildFunc()
-			return container.instances[name],true
-		} else {
-			return struct {}{},false
-		}
-	}
-}
-
-func (container *Container) RegisterService(name string, service Service)  {
-	container.services[name] = &service
-}
-
-func (container *Container) Service(name string) (Service) {
-	service,exist := container.services[name]
+/**
+ * Get a Service in the Container
+ */
+func (ctn *container) Service(name string) (Service) {
+	service,exist := ctn.services[name]
 	if !exist {
 		return nil
 	}
@@ -50,15 +68,15 @@ func (container *Container) Service(name string) (Service) {
 /**
  * Register a MiddleWare in the Container
  */
-func (container *Container) RegisterMiddleWare(name string, middleware MiddleWare)  {
-	container.middlewares[name] = &middleware
+func (ctn *container) RegisterMiddleWare(name string, middleware MiddleWare)  {
+	ctn.middlewares[name] = &middleware
 }
 
 /**
  * Get a MiddleWare in the Container
  */
-func (container *Container) Middleware(name string) (*MiddleWare) {
-	middleware,exist := container.middlewares[name]
+func (ctn *container) Middleware(name string) (*MiddleWare) {
+	middleware,exist := ctn.middlewares[name]
 	if !exist {
 		return nil
 	}
