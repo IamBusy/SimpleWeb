@@ -1,5 +1,9 @@
 package app
 
+import (
+	"../core"
+)
+
 
 // Make sure that this file should be inited after app.go,
 // that to say, the alphabet order of this file smaller than app.go file
@@ -13,14 +17,14 @@ func init()  {
 	//config for database
 	Config.SetByMapWithPrefix("database",map[string]string {
 
-		"host" : "127.0.0.1",
+		"host" : core.Env("db.host","127.0.0.1"),
 
-		"post" : "3306",
+		"port" : core.Env("db.port","3306"),
 
-		"database" : "name",
+		"database" : core.Env("db.database","dbname"),
 
-		"username" : "root",
+		"user" : core.Env("db.user","root"),
 
-		"password" : "123456",
+		"password" : core.Env("db.password","123456"),
 	})
 }
