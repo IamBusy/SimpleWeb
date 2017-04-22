@@ -7,26 +7,37 @@ import (
 
 
 /**
- * Router
+ * router
  */
-type Router struct {
-	app *Container
+type Router interface {
+	SetApp(container Container)
+	GET(uri string,middlewareNames []string ,handler httprouter.Handle)
+	POST(uri string,middlewareNames []string ,handler httprouter.Handle)
+	PUT(uri string,middlewareNames []string ,handler httprouter.Handle)
+	DELETE(uri string,middlewareNames []string ,handler httprouter.Handle)
+	ServeHTTP(w http.ResponseWriter, req *http.Request)
+}
+
+type router struct {
+	app Container
 	router *httprouter.Router
 }
 
-func (router *Router) SetApp(container *Container)  {
+func NewRouter() Router {
+	rutr := &router{}
+	rutr.router = httprouter.New()
+	return rutr
+}
+
+func (router *router) SetApp(container Container)  {
 	router.app = container
 }
 
 /**
  * the entry point for applying middleware and handling request
  */
-func (router *Router)handle(method string, uri string, middlewareNames []string, handler httprouter.Handle)  {
+func (router *router)handle(method string, uri string, middlewareNames []string, handler httprouter.Handle)  {
 
-
-	if router.router == nil {
-		router.router = httprouter.New()
-	}
 
 	router.router.Handle(method, uri, func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
@@ -58,22 +69,22 @@ func (router *Router)handle(method string, uri string, middlewareNames []string,
 	})
 }
 
-func (router *Router) GET(uri string,middlewareNames []string ,handler httprouter.Handle)  {
+func (router *router) GET(uri string,middlewareNames []string ,handler httprouter.Handle)  {
 	router.handle("GET",uri,middlewareNames,handler)
 }
 
-func (router *Router) POST(uri string,middlewareNames []string ,handler httprouter.Handle)  {
+func (router *router) POST(uri string,middlewareNames []string ,handler httprouter.Handle)  {
 	router.handle("POST",uri,middlewareNames,handler)
 }
 
-func (router *Router) PUT(uri string,middlewareNames []string ,handler httprouter.Handle)  {
+func (router *router) PUT(uri string,middlewareNames []string ,handler httprouter.Handle)  {
 	router.handle("PUT",uri,middlewareNames,handler)
 }
 
-func (router *Router) DELETE(uri string,middlewareNames []string ,handler httprouter.Handle)  {
+func (router *router) DELETE(uri string,middlewareNames []string ,handler httprouter.Handle)  {
 	router.handle("DELETE",uri,middlewareNames,handler)
 }
 
-func (router *Router) ServeHTTP(w http.ResponseWriter, req *http.Request)  {
+func (router *router) ServeHTTP(w http.ResponseWriter, req *http.Request)  {
 	router.router.ServeHTTP(w,req)
 }
