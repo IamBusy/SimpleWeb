@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"github.com/julienschmidt/httprouter"
 	"fmt"
+	"../"
+	"../service"
 )
 
 var (
@@ -12,12 +14,15 @@ var (
 
 func init() {
 	Hello = &helloController{}
+	app.Router.GET("/hello",[]string{"auth"},Hello.GET)
 }
 
 type helloController struct {
 
 }
 
-func (controller helloController) GET(w http.ResponseWriter, r *http.Request, ps httprouter.Params)  {
-	fmt.Fprint(w, "Hello World from HelloController")
+func (controller helloController) GET(r *http.Request, ps httprouter.Params) string  {
+	result := service.UserService.All()
+	fmt.Print(result.Columns())
+	return "hello from helloController"
 }
