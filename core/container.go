@@ -1,7 +1,6 @@
 package core
 
 type Container interface {
-	Init()
 	RegisterService(name string, service Service)
 	Service(name string) Service
 	RegisterMiddleWare(name string, middleware MiddleWare)
