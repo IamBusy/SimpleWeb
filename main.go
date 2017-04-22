@@ -2,10 +2,11 @@ package main
 
 import (
 	_ "./app/middleware"
+	_ "./app/controller"
 	"net/http"
 	"./app"
 	"log"
-	_ "./app/controller"
+
 )
 
 
