@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"fmt"
 )
 
 
@@ -11,12 +12,14 @@ import (
  */
 type Router interface {
 	SetApp(container Container)
-	GET(uri string,middlewareNames []string ,handler httprouter.Handle)
-	POST(uri string,middlewareNames []string ,handler httprouter.Handle)
-	PUT(uri string,middlewareNames []string ,handler httprouter.Handle)
-	DELETE(uri string,middlewareNames []string ,handler httprouter.Handle)
+	GET(uri string,middlewareNames []string ,handler Handler)
+	POST(uri string,middlewareNames []string ,handler Handler)
+	PUT(uri string,middlewareNames []string ,handler Handler)
+	DELETE(uri string,middlewareNames []string ,handler Handler)
 	ServeHTTP(w http.ResponseWriter, req *http.Request)
 }
+
+type Handler func(*http.Request, httprouter.Params) string
 
 type router struct {
 	app Container
@@ -36,7 +39,7 @@ func (router *router) SetApp(container Container)  {
 /**
  * the entry point for applying middleware and handling request
  */
-func (router *router)handle(method string, uri string, middlewareNames []string, handler httprouter.Handle)  {
+func (router *router)handle(method string, uri string, middlewareNames []string, handler Handler)  {
 
 
 	router.router.Handle(method, uri, func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -59,7 +62,8 @@ func (router *router)handle(method string, uri string, middlewareNames []string,
 
 		}
 
-		handler(w,r,ps)
+		output := handler(r,ps)
+		fmt.Fprint(w, output)
 
 		for i:=len(middlewares)-1;i>=0;i-- {
 			if middlewares[i] != nil {
@@ -69,19 +73,19 @@ func (router *router)handle(method string, uri string, middlewareNames []string,
 	})
 }
 
-func (router *router) GET(uri string,middlewareNames []string ,handler httprouter.Handle)  {
+func (router *router) GET(uri string,middlewareNames []string ,handler Handler)  {
 	router.handle("GET",uri,middlewareNames,handler)
 }
 
-func (router *router) POST(uri string,middlewareNames []string ,handler httprouter.Handle)  {
+func (router *router) POST(uri string,middlewareNames []string ,handler Handler)  {
 	router.handle("POST",uri,middlewareNames,handler)
 }
 
-func (router *router) PUT(uri string,middlewareNames []string ,handler httprouter.Handle)  {
+func (router *router) PUT(uri string,middlewareNames []string ,handler Handler)  {
 	router.handle("PUT",uri,middlewareNames,handler)
 }
 
-func (router *router) DELETE(uri string,middlewareNames []string ,handler httprouter.Handle)  {
+func (router *router) DELETE(uri string,middlewareNames []string ,handler Handler)  {
 	router.handle("DELETE",uri,middlewareNames,handler)
 }
 
